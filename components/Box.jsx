@@ -1,13 +1,18 @@
 import React from "react";
-import { useLoader } from "@react-three/fiber";
-import { TextureLoader } from "three";
+import { useFrame } from "@react-three/fiber";
 
-function Box(props) {
-  const texture = useLoader(TextureLoader, "/texture.jpg");
+function Box({color = 'white'}) {
+  const myMesh = React.useRef();
+
+  useFrame(({ clock }) => {
+    const a = clock.getElapsedTime();
+    myMesh.current.rotation.x = a;
+  });
+
   return (
-    <mesh {...props} recieveShadow={true} castShadow={true}>
+    <mesh ref={myMesh}>
       <boxBufferGeometry />
-      <meshPhysicalMaterial map={texture} color={"white"} />
+      <meshPhongMaterial color={color} />
     </mesh>
   );
 }
