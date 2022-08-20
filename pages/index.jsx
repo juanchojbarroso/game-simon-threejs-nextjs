@@ -6,24 +6,11 @@ import OrbitControls from "../components/OrbitControls";
 import Light from "../components/Light";
 import Floor from "../components/Floor";
 import {
-  objects3DEasy,
-  objects3DMedium,
-  objects3DHard,
-} from "../utils/objets3D";
+  difficultylevels,
+  difficultylevelsPositions,
+} from "../shared/difficultylevels";
 
 const fov = 80;
-
-const difficultylevels = {
-  EASY: "EASY",
-  MEDIUM: "MEDIUM",
-  HARD: "HARD",
-};
-
-const difficultylevelsPositions = {
-  EASY: objects3DEasy,
-  MEDIUM: objects3DMedium,
-  HARD: objects3DHard,
-};
 
 export default function Home() {
   const [difficultyLevel, setDifficultyLevel] = useState(difficultylevels.EASY);
@@ -73,13 +60,13 @@ export default function Home() {
   function validateSequence(objectId) {
     debugger;
     if (`${sequence[clickCounter]}` === getIdFromKey(objectId)) {
-      console.log("YUJU you pick the correct");
+      console.log("¡¡¡ --- YUJU --- !!! -You pick the correct");
       setClickCounter(clickCounter + 1);
       if (sequence.length === clickCounter + 1) {
         console.log("¡¡¡ ------ YOU WIN  ------ !!!");
       }
     } else {
-      console.log("BUUU you lose");
+      console.log("F*$% -You lose");
       setClickCounter(0);
     }
   }
