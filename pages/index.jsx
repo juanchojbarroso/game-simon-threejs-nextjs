@@ -15,6 +15,7 @@ const fov = 80;
 export default function Home() {
   const [difficultyLevel, setDifficultyLevel] = useState(difficultylevels.EASY);
   const [sequence, setSequence] = useState([]);
+  const [round, setRound] = useState(1);
   const [clickCounter, setClickCounter] = useState(0);
 
   const revealRefs = useRef([]);
@@ -22,9 +23,10 @@ export default function Home() {
 
   useEffect(() => {
     createSequence();
+    setClickCounter(0);
 
     return () => {};
-  }, [difficultyLevel]);
+  }, [difficultyLevel, round]);
 
   function addToRefs(elementRef) {
     if (elementRef && !revealRefs.current.includes(elementRef)) {
@@ -33,10 +35,11 @@ export default function Home() {
   }
 
   function createSequence() {
-    const sequenceLength = getCurrentDifficultyLevel().length;
+    console.log(`Creating sequence for round: ${round}`);
+    const sequenceLength = getCurrentDifficultyLevel().length + round - 1;
     const sequence = Array(sequenceLength)
       .fill()
-      .map(() => getRandomInt(sequenceLength));
+      .map(() => getRandomInt(getCurrentDifficultyLevel().length));
     console.log(`sequence: ${sequence}`);
     setSequence(sequence);
   }
@@ -58,18 +61,27 @@ export default function Home() {
   }
 
   function validateSequence(objectId) {
-    debugger;
     if (`${sequence[clickCounter]}` === getIdFromKey(objectId)) {
       console.log("¡¡¡ --- YUJU --- !!! -You pick the correct");
       setClickCounter(clickCounter + 1);
       if (sequence.length === clickCounter + 1) {
-        console.log("¡¡¡ ------ YOU WIN  ------ !!!");
+        youWin();
       }
     } else {
-      console.log("F*$% -You lose");
-      setClickCounter(0);
+      youLose();
     }
   }
+
+  function youWin(params) {
+    console.log("¡¡¡ ------ YOU WIN  ------ !!!");
+    setRound(round + 1);
+  }
+
+  function youLose(params) {
+    console.log("¡¡¡ --- F*$% --- !!! -You lose");
+    setClickCounter(0);
+  }
+
 
   function handleObjectClick(objectId) {
     validateSequence(objectId);
@@ -87,12 +99,19 @@ export default function Home() {
     <>
       <div style={{}}>
         <>
+        <button
+            onClick={() => {
+              reset();
+            }}
+          >
+            Reset
+          </button>
           <button
             onClick={() => {
               performSequence();
             }}
           >
-            Random
+            Perform sequence
           </button>
           <button
             onClick={() => {
