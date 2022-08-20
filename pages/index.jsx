@@ -82,6 +82,12 @@ export default function Home() {
     setClickCounter(0);
   }
 
+  function reset() {
+    setDifficultyLevel(difficultylevels.EASY);
+    setSequence([]);
+    setRound(1);
+    setClickCounter(0);
+  }
 
   function handleObjectClick(objectId) {
     validateSequence(objectId);
