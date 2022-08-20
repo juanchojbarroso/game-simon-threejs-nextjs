@@ -5,30 +5,11 @@ import RandomObject from "../components/RandomObject";
 import OrbitControls from "../components/OrbitControls";
 import Light from "../components/Light";
 import Floor from "../components/Floor";
-import { randomColor } from "../utils/colors";
-import { getRandomObject } from "../utils/objets3D";
-
-const ItemsPositionEasy = [
-  { position: [-6, 2, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [-2, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [2, 2, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [6, 3, 0], object3D: getRandomObject(), color: randomColor() }
-];
-const ItemsPositionMedium = [
-  { position: [-6, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [-3, 2, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [0, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [3, 2, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [6, 3, 0], object3D: getRandomObject(), color: randomColor() }
-];
-const ItemsPositionHard = [
-  { position: [-9, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [-5.5, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [-2, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [1.5, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [5.5, 3, 0], object3D: getRandomObject(), color: randomColor() },
-  { position: [9, 3, 0], object3D: getRandomObject(), color: randomColor() }
-];
+import {
+  objects3DEasy,
+  objects3DMedium,
+  objects3DHard,
+} from "../utils/objets3D";
 
 const fov = 80;
 
@@ -39,9 +20,9 @@ const difficultylevels = {
 };
 
 const difficultylevelsPositions = {
-  EASY: ItemsPositionEasy,
-  MEDIUM: ItemsPositionMedium,
-  HARD: ItemsPositionHard,
+  EASY: objects3DEasy,
+  MEDIUM: objects3DMedium,
+  HARD: objects3DHard,
 };
 
 export default function Home() {
@@ -94,7 +75,7 @@ export default function Home() {
     if (`${sequence[clickCounter]}` === getIdFromKey(objectId)) {
       console.log("YUJU you pick the correct");
       setClickCounter(clickCounter + 1);
-      if(sequence.length === clickCounter + 1 ){
+      if (sequence.length === clickCounter + 1) {
         console.log("¡¡¡ ------ YOU WIN  ------ !!!");
       }
     } else {
