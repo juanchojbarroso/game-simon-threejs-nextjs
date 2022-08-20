@@ -94,6 +94,9 @@ export default function Home() {
     if (`${sequence[clickCounter]}` === getIdFromKey(objectId)) {
       console.log("YUJU you pick the correct");
       setClickCounter(clickCounter + 1);
+      if(sequence.length === clickCounter + 1 ){
+        console.log("¡¡¡ ------ YOU WIN  ------ !!!");
+      }
     } else {
       console.log("BUUU you lose");
       setClickCounter(0);
