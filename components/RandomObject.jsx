@@ -1,13 +1,42 @@
-import React, { useState } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  Suspense,
+} from "react";
 import { useFrame } from "@react-three/fiber";
 import { useSpring, animated, config } from "@react-spring/three";
 
-function Box({ itemId, _color = "white", _object3D, ...props }) {
-  const myMesh = React.useRef();
+function RandomObject({
+  itemId,
+  itemRef,
+  onObjectClick,
+  _color = "white",
+  _object3D,
+  ...props
+}) {
+  debugger
+  const myMesh = useRef();
   const [active, setActive] = useState(false);
+
+  useImperativeHandle(itemRef, () => ({
+    performClickFromExternalSign() {
+      console.log("Perform click from external signal");
+      console.log("Turn big from external signal", itemId);
+      setActive(!active);
+      setTimeout(() => {
+        setActive(false);
+      }, 400);
+    },
+    childFunction2() {
+      console.log("child function 2 called");
+    },
+  }));
 
   function handleClick() {
     console.log("Turn Big", itemId);
+    onObjectClick(itemId);
     setActive(!active);
     setTimeout(() => {
       console.log("Turn small", itemId);
@@ -33,12 +62,11 @@ function Box({ itemId, _color = "white", _object3D, ...props }) {
       ref={myMesh}
       {...props}
     >
-      < boxBufferGeometry/>
-      <primitive object={_object3D} attach={"geometry"}/>
+      <boxBufferGeometry />
+      <primitive object={_object3D} attach={"geometry"} />
       <meshPhongMaterial color={_color} />
     </animated.mesh>
   );
 }
 
-
-export default Box;
+export default RandomObject;
