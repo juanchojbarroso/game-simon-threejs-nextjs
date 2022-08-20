@@ -17,6 +17,7 @@ export default function Home() {
   const [sequence, setSequence] = useState([]);
   const [round, setRound] = useState(1);
   const [clickCounter, setClickCounter] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const revealRefs = useRef([]);
   revealRefs.current = [];
@@ -87,6 +88,7 @@ export default function Home() {
     setSequence([]);
     setRound(1);
     setClickCounter(0);
+    setIsDisabled(true)
   }
 
   function handleObjectClick(objectId) {
@@ -102,10 +104,10 @@ export default function Home() {
   }
 
   return (
-    <>
+    <div>
       <div style={{}}>
         <>
-        <button
+          <button
             onClick={() => {
               reset();
             }}
@@ -140,9 +142,23 @@ export default function Home() {
           >
             HARD
           </button>
+          <button
+            onClick={() => {
+              setIsDisabled(false)
+            }}
+          >
+            ON
+          </button>
+          <button
+            onClick={() => {
+              setIsDisabled(true)
+            }}
+          >
+            OFF
+          </button>
         </>
       </div>
-      <div className={css.scene}>
+      <div className={css.scene} style={{pointerEvents: isDisabled ? "none": null}}>
         <Canvas
           shadows={true}
           className={css.canvas}
@@ -169,6 +185,6 @@ export default function Home() {
           <Floor position={[0, 0, 0]} />
         </Canvas>
       </div>
-    </>
+    </div>
   );
 }
