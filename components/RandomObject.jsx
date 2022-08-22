@@ -16,7 +16,6 @@ function RandomObject({
   _object3D,
   ...props
 }) {
-  debugger
   const myMesh = useRef();
   const [active, setActive] = useState(false);
 
