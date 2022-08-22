@@ -7,8 +7,6 @@ function Timer({ timerCountDown, timerRef, onTimeExpire }) {
   const {
     seconds,
     minutes,
-    hours,
-    days,
     isRunning,
     start,
     pause,
@@ -29,7 +27,7 @@ function Timer({ timerCountDown, timerRef, onTimeExpire }) {
       time.setSeconds(time.getSeconds() + timerCountDown);
       restart(time);
     }
-  }, [timerCountDown]);
+  }, [timerRef, timerCountDown]);
 
   useImperativeHandle(timerRef, () => ({
     startTimer() {

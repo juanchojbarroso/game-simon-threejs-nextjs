@@ -86,6 +86,7 @@ export default function Home() {
     setRound(1);
     setClickCounter(0);
     setIsDisabled(true);
+    setTimer(0)
   }
 
   function handleObjectClick(objectId) {
@@ -116,27 +117,27 @@ export default function Home() {
     startTimer();
   }
 
-  function startTimer(params) {
+  function startTimer() {
+    const time = new Date();
+    console.log("start game on: ", time);
     setIsDisabled(false);
     setTimer(getTimeInSecond());
-    timerRef.current.startTimer();
     timerRef.current.restartTimer();
   }
 
-  function youWin(params) {
+  function youWin() {
     console.log("¡¡¡ ------ YOU WIN  ------ !!!");
     setRound(round + 1);
     endGame()
   }
 
-  function youLose(params) {
+  function youLose() {
     console.log("¡¡¡ --- F*$% --- !!! -You lose");
     timerRef.current.pauseTimer()
     endGame()
   }
 
   function endGame() {
-    reset()
     setIsDisabled(true);
   }
 
