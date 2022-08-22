@@ -61,7 +61,6 @@ function RandomObject({
       ref={myMesh}
       {...props}
     >
-      <boxBufferGeometry />
       <primitive object={_object3D} attach={"geometry"} />
       <meshPhongMaterial color={_color} />
     </animated.mesh>
