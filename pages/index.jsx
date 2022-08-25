@@ -1,6 +1,22 @@
 import React, { useState, useRef, Suspense, useEffect } from "react";
 import css from "../styles/Home.module.css";
-import { Button, Box, Text, Grid, GridItem, Center } from "@chakra-ui/react";
+import {
+  Button,
+  Box,
+  Text,
+  Grid,
+  GridItem,
+  Center,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Lorem,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { Canvas } from "@react-three/fiber";
 import RandomObject from "../components/RandomObject";
 import OrbitControls from "../components/OrbitControls";
@@ -15,6 +31,7 @@ import {
 const fov = 100;
 
 export default function Home() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [difficultyLevel, setDifficultyLevel] = useState(difficultylevels.EASY);
   const [sequence, setSequence] = useState([]);
   const [round, setRound] = useState(1);
@@ -78,15 +95,13 @@ export default function Home() {
     }
   }
 
-
-
   function reset() {
     setDifficultyLevel(difficultylevels.EASY);
     setSequence([]);
     setRound(1);
     setClickCounter(0);
     setIsDisabled(true);
-    setTimer(0)
+    setTimer(0);
   }
 
   function handleObjectClick(objectId) {
@@ -128,17 +143,23 @@ export default function Home() {
   function youWin() {
     console.log("¡¡¡ ------ YOU WIN  ------ !!!");
     setRound(round + 1);
-    endGame()
+    endGame();
   }
 
   function youLose() {
     console.log("¡¡¡ --- F*$% --- !!! -You lose");
-    timerRef.current.pauseTimer()
-    endGame()
+    timerRef.current.pauseTimer();
+    endGame();
+    onOpen();
   }
 
   function endGame() {
     setIsDisabled(true);
+  }
+
+  function tryAgain() {
+    onClose();
+    play();
   }
 
   return (
@@ -201,21 +222,13 @@ export default function Home() {
           >
             OFF
           </Button>
-          <Button onClick={() => timerRef.current.startTimer()}>Start</Button>
-          <Button onClick={() => timerRef.current.pauseTimer()}>Pause</Button>
-          <Button onClick={() => timerRef.current.resumeTimer()}>Resume</Button>
-          <Button
-            onClick={() => {
-              timerRef.current.restartTimer();
-            }}
-          >
-            Restart
-          </Button>
+          <Button onClick={onOpen}>Open Modal</Button>
         </>
       </div>
       <Box
+        p={4}
         w="100%"
-        h="100vh"
+        h="100%"
         bgGradient="linear(blue.400 10%, blue.100 35%, green.500 80%)"
       >
         <Grid templateColumns="repeat(3, 1fr)" gap={6}>
@@ -233,7 +246,7 @@ export default function Home() {
                   const time = new Date();
                   console.log("end game on: ", time);
                   console.log("TIMEEEEEE!");
-                  endGame()
+                  endGame();
                 }}
               />
             </Center>
@@ -244,7 +257,6 @@ export default function Home() {
             </Center>
           </GridItem>
         </Grid>
-
         <div
           className={css.scene}
           style={{ pointerEvents: isDisabled ? "none" : null }}
@@ -276,6 +288,48 @@ export default function Home() {
           </Canvas>
         </div>
       </Box>
+      {<YouLoseModal tryAgain={tryAgain} isOpen={isOpen} />}
     </div>
+  );
+}
+
+
+function YouLoseModal({ tryAgain, isOpen }) {
+  return (
+    <>
+      <Modal isCentered closeOnOverlayClick={false} isOpen={isOpen}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody pb={6}>
+            <Center h="100px">
+              <Text
+                bgGradient="linear(to-l, #7928CA, #FF0080)"
+                bgClip="text"
+                fontSize="6xl"
+                fontWeight="extrabold"
+              >
+                YOU LOSE
+              </Text>
+            </Center>
+            <Center h="100px">
+              <Box
+                as="button"
+                p={4}
+                color="white"
+                fontWeight="bold"
+                borderRadius="md"
+                bgGradient="linear(to-r, teal.500, green.500)"
+                _hover={{
+                  bgGradient: "linear(to-r, red.500, yellow.500)",
+                }}
+                onClick={tryAgain}
+              >
+                TRY AGAIN
+              </Box>
+            </Center>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
