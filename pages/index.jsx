@@ -76,10 +76,17 @@ export default function Home() {
 
   function performSequence() {
     console.log("performClick");
-    sequence.forEach((turn, i) => {
-      setTimeout(() => {
-        revealRefs.current[turn]?.performClickFromExternalSign();
-      }, i * 1000);
+    return new Promise((resolve, reject) => {
+      sequence.forEach((turn, i) => {
+        setTimeout(() => {
+          revealRefs.current[turn]?.performClickFromExternalSign();
+          if (i + 1 === sequence.length) {
+            setTimeout(() => {
+              resolve();
+            }, i * 500);
+          }
+        }, i * 1000);
+      });
     });
   }
 
@@ -128,7 +135,8 @@ export default function Home() {
     }
   }
 
-  function play() {
+  async function play() {
+    await performSequence();
     startTimer();
   }
 
@@ -222,7 +230,6 @@ export default function Home() {
           >
             OFF
           </Button>
-          <Button onClick={onOpen}>Open Modal</Button>
         </>
       </div>
       <Box
@@ -292,7 +299,6 @@ export default function Home() {
     </div>
   );
 }
-
 
 function YouLoseModal({ tryAgain, isOpen }) {
   return (
