@@ -1,5 +1,6 @@
 import React, {
   useState,
+  forwardRef,
   useEffect,
   useRef,
   useImperativeHandle,
@@ -67,4 +68,4 @@ function RandomObject({
   );
 }
 
-export default RandomObject;
+export default forwardRef(RandomObject);
