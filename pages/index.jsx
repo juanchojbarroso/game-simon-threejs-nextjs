@@ -10,11 +10,7 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
-  Lorem,
   useDisclosure,
 } from "@chakra-ui/react";
 import { Canvas } from "@react-three/fiber";
@@ -27,17 +23,20 @@ import {
   difficultylevels,
   difficultylevelsPositions,
 } from "../shared/difficultylevels";
+import { getRandomInt, getIdFromKey } from "../shared/sharedUtils";
 
 const fov = 100;
 
 export default function Home() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [difficultyLevel, setDifficultyLevel] = useState(difficultylevels.EASY);
   const [sequence, setSequence] = useState([]);
   const [round, setRound] = useState(1);
   const [clickCounter, setClickCounter] = useState(0);
   const [isDisabled, setIsDisabled] = useState(true);
   const [timer, setTimer] = useState(0);
+
+  const [isYouLoseOpen, setYouLoseToggle] = useState(false);
+  const [isYouWinOpen, setYouWinOpenToggle] = useState(false);
 
   const timerRef = useRef(null);
   const revealRefs = useRef([]);
@@ -67,31 +66,20 @@ export default function Home() {
     setSequence(sequence);
   }
 
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-  }
-  function getIdFromKey(key) {
-    return key.split("_").pop();
-  }
-
   function performSequence() {
-    console.log("performClick");
-    return new Promise((resolve, reject) => {
-      sequence.forEach((turn, i) => {
-        setTimeout(() => {
-          revealRefs.current[turn]?.performClickFromExternalSign();
-          if (i + 1 === sequence.length) {
-            setTimeout(() => {
-              resolve();
-            }, i * 500);
-          }
-        }, i * 1000);
-      });
+    sequence.forEach((turn, i) => {
+      setTimeout(() => {
+        console.log(`performClick on: ${turn}`);
+        revealRefs.current[turn]?.performClickFromExternalSign();
+      }, (1 + i) * 1000);
     });
   }
 
   function validateSequence(objectId) {
-    if (`${sequence[clickCounter]}` === getIdFromKey(objectId)) {
+    const id = getIdFromKey(objectId)
+    console.log(clickCounter)
+    console.log(`${sequence[clickCounter]}`, id)
+    if (`${sequence[clickCounter]}` === id) {
       console.log("¡¡¡ --- YUJU --- !!! -You pick the correct");
       setClickCounter(clickCounter + 1);
       if (sequence.length === clickCounter + 1) {
@@ -102,16 +90,8 @@ export default function Home() {
     }
   }
 
-  function reset() {
-    setDifficultyLevel(difficultylevels.EASY);
-    setSequence([]);
-    setRound(1);
-    setClickCounter(0);
-    setIsDisabled(true);
-    setTimer(0);
-  }
-
   function handleObjectClick(objectId) {
+    console.log(`handleObjectClick ${objectId}`);
     validateSequence(objectId);
   }
 
@@ -136,8 +116,20 @@ export default function Home() {
   }
 
   async function play() {
-    await performSequence();
-    startTimer();
+    performSequence();
+    setTimeout(() => {
+      startTimer();
+    }, sequence.length * 1010);
+  }
+
+  async function nextRound() {
+    setYouWinOpenToggle(false);
+    play();
+  }
+
+  function tryAgain() {
+    setYouLoseToggle(false);
+    play();
   }
 
   function startTimer() {
@@ -150,26 +142,32 @@ export default function Home() {
 
   function youWin() {
     console.log("¡¡¡ ------ YOU WIN  ------ !!!");
+    setYouWinOpenToggle(true);
     setRound(round + 1);
+    timerRef.current.pauseTimer();
     endGame();
   }
 
   function youLose() {
     console.log("¡¡¡ --- F*$% --- !!! -You lose");
+    setClickCounter(0);
+    setYouLoseToggle(true);
     timerRef.current.pauseTimer();
     endGame();
-    onOpen();
   }
 
   function endGame() {
     setIsDisabled(true);
   }
 
-  function tryAgain() {
-    onClose();
-    play();
+  function reset() {
+    setDifficultyLevel(difficultylevels.EASY);
+    setSequence([]);
+    setRound(1);
+    setClickCounter(0);
+    setIsDisabled(true);
+    setTimer(0);
   }
-
   return (
     <div>
       <div style={{}}>
@@ -230,6 +228,13 @@ export default function Home() {
           >
             OFF
           </Button>
+          <Button
+            onClick={() => {
+              nextRound();
+            }}
+          >
+            Next RPUND
+          </Button>
         </>
       </div>
       <Box
@@ -253,7 +258,7 @@ export default function Home() {
                   const time = new Date();
                   console.log("end game on: ", time);
                   console.log("TIMEEEEEE!");
-                  endGame();
+                  youLose();
                 }}
               />
             </Center>
@@ -295,7 +300,8 @@ export default function Home() {
           </Canvas>
         </div>
       </Box>
-      {<YouLoseModal tryAgain={tryAgain} isOpen={isOpen} />}
+      {<YouLoseModal tryAgain={tryAgain} isOpen={isYouLoseOpen} />}
+      {<YouWinModal nextRound={nextRound} isOpen={isYouWinOpen} />}
     </div>
   );
 }
@@ -331,6 +337,46 @@ function YouLoseModal({ tryAgain, isOpen }) {
                 onClick={tryAgain}
               >
                 TRY AGAIN
+              </Box>
+            </Center>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+function YouWinModal({ nextRound, isOpen }) {
+  return (
+    <>
+      <Modal isCentered closeOnOverlayClick={false} isOpen={isOpen}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody pb={6}>
+            <Center h="100px">
+              <Text
+                bgGradient="linear(to-l, #7928CA, #FF0080)"
+                bgClip="text"
+                fontSize="6xl"
+                fontWeight="extrabold"
+              >
+                YOU WIN
+              </Text>
+            </Center>
+            <Center h="100px">
+              <Box
+                as="button"
+                p={4}
+                color="white"
+                fontWeight="bold"
+                borderRadius="md"
+                bgGradient="linear(to-r, teal.500, green.500)"
+                _hover={{
+                  bgGradient: "linear(to-r, red.500, yellow.500)",
+                }}
+                onClick={nextRound}
+              >
+                NEXT ROUND
               </Box>
             </Center>
           </ModalBody>
